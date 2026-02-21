@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"editor.scrollbar.horizontal": "visible",
+		"stm32-for-vscode.openOCDPath": false
+	}
+}

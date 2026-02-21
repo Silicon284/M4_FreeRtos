@@ -1,0 +1,7 @@
+{
+    "editor.scrollbar.horizontal": "visible",
+    "editor.scrollbar.ignoreHorizontalScrollbarInContentHeight": true,
+    "editor.scrollbar.horizontalScrollbarSize": 14,
+    "editor.scrollbar.scrollByPage": false,
+    "cmake.sourceDirectory": "C:/CoffeeWithEmbedded/STM_Projects/FreeRTOS/FreeRTOS-Kernel"
+}

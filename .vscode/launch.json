@@ -1,0 +1,34 @@
+{
+    "configurations": [
+        {
+            "name": "cppdbg: Attach to QEMU",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/port/FreeRTOS.elf",
+            "args": [],
+            "stopAtEntry": true,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "gdb-multiarch",
+            "miDebuggerServerAddress": "localhost:1234",
+            "setupCommands": [
+                { 
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "set architecture arm",
+                    "ignoreFailures": true
+                },
+                { 
+                    "description": "Run Reset Command",
+                    "text": "monitor system reset",
+                    "ignoreFailures": true
+                }
+                {
+                    "description": "Set hex display format",
+                    "text": "set output-radix 16"
+                }
+            ]
+        }        
+    ]
+}
