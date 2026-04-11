@@ -2,22 +2,30 @@ PROJ = FreeRTOS
 CPU ?= cortex-m4
 BOARD ?= stm32vldiscovery
 
-FREERTOS_PATH = FreeRTOS_CortexM4_qemu/FreeRTOS-Kernel
-SRC_FILE_PATH = FreeRTOS_CortexM4_qemu/port
+FREERTOS_PATH = ../FreeRTOS_CortexM4_qemu/FreeRTOS-Kernel
+SRC_FILE_PATH = ../FreeRTOS_CortexM4_qemu/port
+ARM_FILES_PATH = ../FreeRTOS_CortexM4_qemu/arm_cm4
+APPLICATION_PATH = ../FreeRTOS_CortexM4_qemu/application
 
 INC = 	-I$(FREERTOS_PATH)/include/ \
 		-I$(FREERTOS_PATH)/portable/GCC/ARM_CM3/ \
-		-I$(SRC_FILE_PATH)/
+		-I$(FREERTOS_PATH)/portable/GCC/ARM_CM3/ \
+		-I$(ARM_FILES_PATH)/ \
+		-I$(SRC_FILE_PATH)/ \
+		-I$(APPLICATION_PATH)/include
 		
 
 FREERTOS_SRC = 	$(FREERTOS_PATH)/tasks.c \
-				$(FREERTOS_PATH)/portable/MemMang/heap_4.c \
-				$(SRC_FILE_PATH)/portFunctions.c \
-				$(FREERTOS_PATH)/portable/GCC/ARM_CM3/port.c \
+				$(FREERTOS_PATH)/custom_hooks.c \
 				$(FREERTOS_PATH)/list.c \
 				$(FREERTOS_PATH)/queue.c \
-				$(FREERTOS_PATH)/timers.c
-				
+				$(FREERTOS_PATH)/timers.c \
+				$(FREERTOS_PATH)/portable/MemMang/heap_4.c \
+				$(FREERTOS_PATH)/portable/GCC/ARM_CM3/port.c \
+				$(SRC_FILE_PATH)/portFunctions.c \
+				$(SRC_FILE_PATH)/exception_handlers.c \
+				$(APPLICATION_PATH)/source/main.c \
+
 
 OBJ = $(SRC_FILE_PATH)/boot.o\
 	  $(SRC_FILE_PATH)/start.o
