@@ -6,6 +6,7 @@
 	],
 	"settings": {
 		"editor.scrollbar.horizontal": "visible",
-		"stm32-for-vscode.openOCDPath": false
+		"stm32-for-vscode.openOCDPath": false,
+		"cmake.useCMakePresets": "always"
 	}
 }
