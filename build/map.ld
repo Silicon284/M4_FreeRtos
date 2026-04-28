@@ -1,7 +1,7 @@
 MEMORY
 {
-    FLASH : ORIGIN = 0x08000000, LENGTH = 128K
-    RAM : ORIGIN = 0x20000000, LENGTH = 8K
+    FLASH : ORIGIN = 0x08100000, LENGTH = 1024K
+    RAM : ORIGIN = 0x10000000, LENGTH = 288K
 }
 
 /* Define stack and heap sizes */
@@ -32,6 +32,8 @@ SECTIONS
         *(COMMON)    /* ← This ensures COMMON variables go in BSS */
         . = ALIGN(4);
         _ebss = .;
+        end = .;     /* Define end symbol for _sbrk */
+        _end = .;    /* Alternative symbol name */
     } > RAM
 
 
