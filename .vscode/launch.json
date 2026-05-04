@@ -5,10 +5,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug FreeRTOS - ST-Link",
+            "name": "Debug SmartRcCar - ST-Link",
             "cwd": "${workspaceFolder}",
             "type": "cortex-debug",
-            "executable": "${workspaceFolder}/FreeRTOS.elf",
+            "executable": "${workspaceFolder}/build/SmartRcCar.elf",
             "request": "launch",        
             "servertype": "stlink",
             "device": "STM32H745ZITx", //MCU used
@@ -26,13 +26,13 @@
                 "-t", "-s", 
                 "-k"
             ],
-            "preLaunchTask": "Build + Flash FreeRTOS"
+            "preLaunchTask": "Build + Flash SmartRcCar"
         },
         {
-            "name": "Attach FreeRTOS - ST-Link",
+            "name": "Attach SmartRcCar - ST-Link",
             "cwd": "${workspaceFolder}",    
             "type": "cortex-debug",
-            "executable": "${workspaceFolder}/FreeRTOS_CortexM4_qemu/port/FreeRTOS.elf",
+            "executable": "${workspaceFolder}/build/SmartRcCar.elf",
             "request": "attach", 
             "servertype": "stlink",
             "device": "STM32H745ZITx", //MCU used
@@ -54,7 +54,7 @@
             "name": "cppdbg: Attach to QEMU",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/FreeRTOS_CortexM4_qemu/port/FreeRTOS.elf",
+            "program": "${workspaceFolder}/build/SmartRcCar.elf",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",

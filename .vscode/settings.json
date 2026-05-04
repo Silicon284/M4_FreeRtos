@@ -3,5 +3,13 @@
     "editor.scrollbar.ignoreHorizontalScrollbarInContentHeight": true,
     "editor.scrollbar.horizontalScrollbarSize": 14,
     "editor.scrollbar.scrollByPage": false,
-    "cmake.sourceDirectory": "C:/CoffeeWithEmbedded/STM_Projects/M4_FreeRtos/FreeRTOS_CortexM4_qemu/FreeRTOS-Kernel"
+    "files.exclude": {
+        "**/*.o": true,
+        "**/*.elf": false,
+        "**/*.lst": true,
+        "**/*.debug": false,
+        "**/*.out": true,
+        "**/.gdb_history": true
+
+    }
 }

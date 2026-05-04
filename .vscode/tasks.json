@@ -11,35 +11,35 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "Build FreeRTOS",
+            "label": "Build SmartRcCar",
             "command": "make",
             "args": ["all"],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/build"
             },
             "group": "build",
             "problemMatcher": []
         },
         {
             "type": "shell",
-            "label": "Clean FreeRTOS",
+            "label": "Clean SmartRcCar",
             "command": "make",
             "args": ["clean"],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/build"
             },
             "group": "build",
             "problemMatcher": []
         },
         {
             "type": "shell",
-            "label": "CubeProg: Flash FreeRTOS",
+            "label": "CubeProg: Flash SmartRcCar",
             "command": "STM32_Programmer_CLI",
             "args": [
                 "--connect",
                 "port=swd",
                 "--download",
-                "${workspaceFolder}/FreeRTOS.elf",
+                "${workspaceFolder}/build/SmartRcCar.elf",
                 "-hardRst",
                 "-rst",
                 "--start"
@@ -50,16 +50,16 @@
             "problemMatcher": []
         },
         {
-            "label": "Build + Flash FreeRTOS",
+            "label": "Build + Flash SmartRcCar",
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Build FreeRTOS",
-                "CubeProg: Flash FreeRTOS"
+                "Build SmartRcCar",
+                "CubeProg: Flash SmartRcCar"
             ]
         },
         {
             "type": "shell",
-            "label": "Start GDB Server for FreeRTOS",
+            "label": "Start GDB Server for SmartRcCar",
             "command": "ST-LINK_gdbserver.exe",
             "args": [
                 "-p",
@@ -82,7 +82,7 @@
             "command": "STM32_Programmer_CLI",
             "args": ["--list"],
             "options": {
-                "cwd": "${workspaceFolder}"
+                "cwd": "${workspaceFolder}/build"
             },
             "problemMatcher": []
         }

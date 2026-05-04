@@ -1,0 +1,32 @@
+# Build artifacts
+*.o
+*.elf
+*.lst
+*.debug
+*.out
+.gdb_history
+
+# Build directory artifacts (keeping Makefile and linker script)
+build/*.elf
+build/*.lst
+build/*.debug
+build/*.out
+
+# IDE and editor files
+.vscode/launch.json
+.vscode/c_cpp_properties.json
+
+# Temporary files
+*~
+*.tmp
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
