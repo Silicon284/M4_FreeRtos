@@ -11,5 +11,6 @@
         "**/*.out": true,
         "**/.gdb_history": true
 
-    }
+    },
+    "editor.experimentalGpuAcceleration": "on"
 }

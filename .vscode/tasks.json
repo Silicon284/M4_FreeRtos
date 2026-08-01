@@ -11,80 +11,195 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "Build SmartRcCar",
+            "label": "M7: Build",
             "command": "make",
             "args": ["all"],
             "options": {
-                "cwd": "${workspaceFolder}/build"
+                "cwd": "${workspaceFolder}/SmartCar_M7/build"
             },
             "group": "build",
             "problemMatcher": []
         },
         {
             "type": "shell",
-            "label": "Clean SmartRcCar",
+            "label": "M7: Clean",
             "command": "make",
             "args": ["clean"],
             "options": {
-                "cwd": "${workspaceFolder}/build"
+                "cwd": "${workspaceFolder}/SmartCar_M7/build"
             },
             "group": "build",
             "problemMatcher": []
         },
         {
             "type": "shell",
-            "label": "CubeProg: Flash SmartRcCar",
+            "label": "M7: Flash",
             "command": "STM32_Programmer_CLI",
             "args": [
                 "--connect",
                 "port=swd",
+                "mode=UR",
+                "-hardRst",
+                "-rst",
                 "--download",
-                "${workspaceFolder}/build/SmartRcCar.elf",
+                "${workspaceFolder}/SmartCar_M7/build/SmartRcCar_M7.elf",
                 "-hardRst",
                 "-rst",
                 "--start"
             ],
             "options": {
-                "cwd": "C:\\ST\\STM32CubeCLT_1.18.0\\STM32CubeProgrammer\\bin"
+                "cwd": "C:\\ST\\STM32CubeCLT_1.21.0\\STM32CubeProgrammer\\bin"
             },
             "problemMatcher": []
         },
         {
-            "label": "Build + Flash SmartRcCar",
+            "label": "M7: Build + M7: Flash",
             "dependsOrder": "sequence",
             "dependsOn": [
-                "Build SmartRcCar",
-                "CubeProg: Flash SmartRcCar"
+                "M7: Clean",
+                "M7: Build",
+                "M7: Flash"
             ]
         },
         {
             "type": "shell",
-            "label": "Start GDB Server for SmartRcCar",
-            "command": "ST-LINK_gdbserver.exe",
-            "args": [
-                "-p",
-                "61235",
-                "-l",
-                "1",
-                "-d",
-                "-cp",
-                "C:\\ST\\STM32CubeCLT_1.18.0\\STM32CubeProgrammer\\bin"
-            ],
+            "label": "M4: Build",
+            "command": "make",
+            "args": ["all"],
             "options": {
-                "cwd": "C:\\ST\\STM32CubeCLT_1.18.0\\STLink-gdb-server\\bin"
+                "cwd": "${workspaceFolder}/SmartCar_M4/build"
             },
-            "isBackground": true,
+            "group": "build",
             "problemMatcher": []
         },
         {
             "type": "shell",
-            "label": "CubeProg: List all available communication interfaces",
+            "label": "M4: Clean",
+            "command": "make",
+            "args": ["clean"],
+            "options": {
+                "cwd": "${workspaceFolder}/SmartCar_M4/build"
+            },
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "M4: Flash",
+            "command": "STM32_Programmer_CLI",
+            "args": [
+                "--connect",
+                "port=swd",
+                "mode=UR",
+                "-hardRst",
+                "--download",
+                "${workspaceFolder}/SmartCar_M4/build/SmartRcCar_M4.elf",
+                "-hardRst",
+                "--start"
+            ],
+            "options": {
+                "cwd": "C:\\ST\\STM32CubeCLT_1.21.0\\STM32CubeProgrammer\\bin"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "M4: Build + M4: Flash",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "M4: Clean",
+                "M4: Build",
+                "M4: Flash"
+            ]
+        },
+        {
+            "label": "Start M4 GDB Server",
+            "type": "shell",
+            "command": "ST-LINK_gdbserver.exe",
+            "args": [
+                "-p", "50001",
+                "-cp", "C:/ST/STM32CubeCLT_1.21.0/STM32CubeProgrammer/bin",
+                "--swd",
+                "--attach",
+                "--halt",
+                "-l", "1",
+                "-k",
+                "-m", "3"
+            ],
+            "options": {
+                "cwd": "C:/ST/STM32CubeCLT_1.21.0/STLink-gdb-server/bin"
+            },
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": {
+                    "regexp": "."
+                },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": ".",
+                    "endsPattern": "Waiting for debugger connection"
+                }
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Erase Flash",
+            "command": "STM32_Programmer_CLI",
+            "args": [
+                "--connect",
+                "port=swd",
+                "--erase",
+                "all"
+            ],
+            "options": {
+                "cwd": "C:\\ST\\STM32CubeCLT_1.21.0\\STM32CubeProgrammer\\bin"
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "Read Option Bytes",
+            "command": "STM32_Programmer_CLI",
+            "args": [
+                "--connect",
+                "port=swd",
+                "mode=UR",
+                "ap=3",
+                "-hardRst",
+                "--ob",
+                "displ"
+            ],
+            "options": {
+                "cwd": "${workspaceFolder}"
+            },
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "Available communication interfaces",
             "command": "STM32_Programmer_CLI",
             "args": ["--list"],
             "options": {
                 "cwd": "${workspaceFolder}/build"
             },
             "problemMatcher": []
+        },
+        {
+            "label": "Start OpenOCD (Dual Core)",
+            "type": "shell",
+            "command": "C:/GccArmToolchain/OpenOCD-20250710-0.12.0/bin/openocd.exe",
+            "args": [
+                "-s", "C:/GccArmToolchain/OpenOCD-20250710-0.12.0/share/openocd/scripts",
+                "-f", "${workspaceFolder}/openocd.cfg"
+            ],
+            "isBackground": true,
+            "problemMatcher": {
+                "pattern": { "regexp": "^(.*)", "message": 1 },
+                "background": {
+                    "activeOnStart": true,
+                    "beginsPattern": "Open On-Chip Debugger",
+                    "endsPattern": "Listening on port \\d+ for gdb connections"
+                }
+            }
         }
     ]
 }

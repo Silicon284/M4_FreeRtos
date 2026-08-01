@@ -5,56 +5,84 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Debug SmartRcCar - ST-Link",
+            "name": "M7: Debug-ST-Link",
             "cwd": "${workspaceFolder}",
             "type": "cortex-debug",
-            "executable": "${workspaceFolder}/build/SmartRcCar.elf",
+            "executable": "${workspaceFolder}/SmartCar_M7/build/SmartRcCar_M7.elf",
             "request": "launch",        
             "servertype": "stlink",
             "device": "STM32H745ZITx", //MCU used
             "interface": "swd",
-            "serialNumber": "",
-            "runToEntryPoint": "main",
-            "svdFile": "C:/ST/STM32CubeCLT_1.18.0/STMicroelectronics_CMSIS_SVD/STM32H745_CM4.svd",
-            "serverpath": "C:/ST/STM32CubeCLT_1.18.0/STLink-gdb-server/bin/ST-LINK_gdbserver.exe",
-            "stm32cubeprogrammer":"C:/ST/STM32CubeCLT_1.18.0/STM32CubeProgrammer/bin",
-            "stlinkPath": "C:/ST/STM32CubeCLT_1.18.0/STLink-gdb-server/bin/ST-LINK_gdbserver.exe",   
-            "armToolchainPath": "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin",
-            "gdbPath":"C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-gdb",
+            "showDevDebugOutput": "raw",
+            "overrideLaunchCommands": [
+                "set mem inaccessible-by-default off",
+                "monitor reset"
+            ],
+            "svdFile": "C:/ST/STM32CubeCLT_1.21.0/STMicroelectronics_CMSIS_SVD/STM32H745_CM7.svd",
+            "serverpath": "C:/ST/STM32CubeCLT_1.21.0/STLink-gdb-server/bin/ST-LINK_gdbserver.exe",
+            "stm32cubeprogrammer":"C:/ST/STM32CubeCLT_1.21.0/STM32CubeProgrammer/bin",
+            "stlinkPath": "C:/ST/STM32CubeCLT_1.21.0/STLink-gdb-server/bin/ST-LINK_gdbserver.exe", 
+            "armToolchainPath": "C:/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin",
+            "gdbPath":"C:/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin/arm-none-eabi-gdb",
             "v1": false,
             "serverArgs": [
-                "-t", "-s", 
-                "-k"
-            ],
-            "preLaunchTask": "Build + Flash SmartRcCar"
+            "-l", "1",
+            "-k",            
+            "-m", "0",        // ← CM7 = core 0
+            ]
+            //"preLaunchTask": "M7: Build + M7: Flash"
         },
         {
-            "name": "Attach SmartRcCar - ST-Link",
-            "cwd": "${workspaceFolder}",    
+           "name": "M7: Debug-OpenOCD",
             "type": "cortex-debug",
-            "executable": "${workspaceFolder}/build/SmartRcCar.elf",
-            "request": "attach", 
+            "request": "attach",
+            "servertype": "external",
+            "gdbTarget": "localhost:3333",
+            "executable": "${workspaceFolder}/SmartCar_M7/build/SmartRcCar_M7.elf",
+            "gdbPath": "C:/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin/arm-none-eabi-gdb",
+            "svdFile": "C:/ST/STM32CubeCLT_1.21.0/STMicroelectronics_CMSIS_SVD/STM32H745_CM7.svd"
+        },
+        {
+            "name": "M4: Debug-ST-Link",
+            "cwd": "${workspaceFolder}",
+            "type": "cortex-debug",
+            "executable": "${workspaceFolder}/SmartCar_M4/build/SmartRcCar_M4.elf",
+            "request": "launch",        
             "servertype": "stlink",
             "device": "STM32H745ZITx", //MCU used
             "interface": "swd",
-            "serialNumber": "",
-            "svdFile": "C:/ST/STM32CubeCLT_1.18.0/STMicroelectronics_CMSIS_SVD/STM32H745_CM4.svd",
-            "serverpath": "C:/ST/STM32CubeCLT_1.18.0/STLink-gdb-server/bin",
-            "stm32cubeprogrammer":"C:/ST/STM32CubeCLT_1.18.0/STM32CubeProgrammer/bin",
-            "stlinkPath": "C:/ST/STM32CubeCLT_1.18.0/STLink-gdb-server/bin/ST-LINK_gdbserver.exe",   
-            "armToolchainPath": "C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin",
-            "gdbPath":"C:/ST/STM32CubeCLT_1.18.0/GNU-tools-for-STM32/bin/arm-none-eabi-gdb",
+            "showDevDebugOutput": "raw",
+            "svdFile": "C:/ST/STM32CubeCLT_1.21.0/STMicroelectronics_CMSIS_SVD/STM32H745_CM4.svd",
+            "serverpath": "C:/ST/STM32CubeCLT_1.21.0/STLink-gdb-server/bin/ST-LINK_gdbserver.exe",
+            "stm32cubeprogrammer":"C:/ST/STM32CubeCLT_1.21.0/STM32CubeProgrammer/bin",
+            "stlinkPath": "C:/ST/STM32CubeCLT_1.21.0/STLink-gdb-server/bin/ST-LINK_gdbserver.exe", 
+            "armToolchainPath": "C:/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin",
+            "gdbPath":"C:/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin/arm-none-eabi-gdb",
             "v1": false,
             "serverArgs": [
-                "-t", "-s"
+                "-l", "1",
+                "-k",
+                "-m", "3"
             ],
+            "preLaunchTask": "M4: Build + M4: Flash"
         },
-                
         {
-            "name": "cppdbg: Attach to QEMU",
+            "name": "M4: Debug-OpenOCD",
+            "cwd": "${workspaceFolder}",
+            "type": "cortex-debug",
+            "executable": "${workspaceFolder}/SmartCar_M4/build/SmartRcCar_M4.elf",
+            "request": "attach",
+            "servertype": "external",
+            "gdbTarget": "localhost:3334",
+            "svdFile": "C:/ST/STM32CubeCLT_1.21.0/STMicroelectronics_CMSIS_SVD/STM32H745_CM4.svd",
+            "armToolchainPath": "C:/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin",
+            "gdbPath": "C:/ST/STM32CubeCLT_1.21.0/GNU-tools-for-STM32/bin/arm-none-eabi-gdb"
+        },
+        {
+            "name": "M7: Attach to QEMU",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/build/SmartRcCar.elf",
+            "program": "${workspaceFolder}/SmartCar_M7/build/SmartRcCar_M7.elf",
             "args": [],
             "stopAtEntry": true,
             "cwd": "${workspaceFolder}",
@@ -79,6 +107,13 @@
                     "text": "set output-radix 16"
                 }
             ]
-        }        
+        }
+    ],
+    "compounds": [
+        {
+            "name": "DualCore_Debug",
+            "configurations": ["M7: Debug-OpenOCD", "M4: Debug-OpenOCD"],
+            "preLaunchTask": "Start OpenOCD (Dual Core)"
+        }
     ]
 }

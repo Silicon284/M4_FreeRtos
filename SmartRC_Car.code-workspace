@@ -5,6 +5,9 @@
 		}
 	],
 	"settings": {
-		"editor.scrollbar.horizontal": "visible"
+		"editor.scrollbar.horizontal": "visible",
+		"cortex-debug.variableUseNaturalFormat": false,
+		"editor.experimentalGpuAcceleration": "on",
+		"terminal.integrated.gpuAcceleration": "on"
 	}
 }
