@@ -179,248 +179,141 @@ void MotorControl_ADC_Reset(void)
     Terminal_Display(reset_complete);
 }
 
+void MotorControl_ADC_Channel_Init(void){
+
+    // Configure ADC3 Channel 11 for PC1 (Motor A Current Sense)
+    sConfig.Channel                 = ADC_CHANNEL_TEMPSENSOR;  // PC1 is ADC3 Channel 11
+    sConfig.Rank                    = ADC_REGULAR_RANK_1;
+    sConfig.SamplingTime            = ADC_SAMPLETIME_2CYCLES_5;  // Longer sampling for stability
+    sConfig.SingleDiff              = ADC_SINGLE_ENDED;
+    sConfig.OffsetNumber            = ADC_OFFSET_NONE;
+    sConfig.Offset                  = 0;
+    sConfig.OffsetSignedSaturation  = DISABLE;
+
+    HAL_StatusTypeDef adc3_ch_status = HAL_ADC_ConfigChannel(&hadc3, &sConfig);
+    if (adc3_ch_status != HAL_OK)
+    {
+        snprintf(msg.text, MSG_LEN, "ADC3 Ch Error: %d, State: 0x%lX\r\n", adc3_ch_status, (unsigned long)hadc3.State);
+        if (xQueueSend(xUartQueue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
+            /* Queue full, message not sent */
+        }
+        MT_Error_Handler();
+    }
+    
+    HAL_Delay(50);  // Initial delay for regulator
+}
+
 void MotorControl_ADC_Init(void)
 {
-    char debug_start[] = "MotorControl_ADC_Init: Starting ADC3 initialization...\r\n";
-    Terminal_Display(debug_start);
-
+    UartMessage_t msg;
     // Perform complete ADC3 reset first
     //MotorControl_ADC_Reset();
-    
-    // Enable ADC3 clock
+
     __HAL_RCC_ADC3_CLK_ENABLE();
     HAL_Delay(10);  // Allow clock to stabilize
     
     // Configure ADC3 for PC1 (MT_A_SENSE) - Channel 11
-    hadc3.Instance = ADC3;
-    hadc3.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV8;  // Slower clock for stability
-    hadc3.Init.Resolution = ADC_RESOLUTION_12B;
-    hadc3.Init.ScanConvMode = ADC_SCAN_DISABLE;
-    hadc3.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
-    hadc3.Init.LowPowerAutoWait = DISABLE;
-    hadc3.Init.ContinuousConvMode = DISABLE;
-    hadc3.Init.NbrOfConversion = 1;
-    hadc3.Init.DiscontinuousConvMode = DISABLE;
-    hadc3.Init.ExternalTrigConv = ADC_SOFTWARE_START;
-    hadc3.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+    hadc3.Instance                      = ADC3;
+    hadc3.Init.ClockPrescaler           = ADC_CLOCK_ASYNC_DIV8;  // Slower clock for stability
+    hadc3.Init.Resolution               = ADC_RESOLUTION_12B;
+    hadc3.Init.ScanConvMode             = ADC_SCAN_DISABLE;
+    hadc3.Init.EOCSelection             = ADC_EOC_SINGLE_CONV;
+    hadc3.Init.LowPowerAutoWait         = DISABLE;
+    hadc3.Init.ContinuousConvMode       = DISABLE;
+    hadc3.Init.NbrOfConversion          = 1;
+    hadc3.Init.DiscontinuousConvMode    = DISABLE;
+    hadc3.Init.ExternalTrigConv         = ADC_SOFTWARE_START;
+    hadc3.Init.ExternalTrigConvEdge     = ADC_EXTERNALTRIGCONVEDGE_NONE;
     hadc3.Init.ConversionDataManagement = ADC_CONVERSIONDATA_DR;
-    hadc3.Init.Overrun = ADC_OVR_DATA_OVERWRITTEN;
-    hadc3.Init.LeftBitShift = ADC_LEFTBITSHIFT_NONE;
-    hadc3.Init.OversamplingMode = DISABLE;
-
-    char debug_config[] = "MotorControl_ADC_Init: Configuring ADC3...\r\n";
-    Terminal_Display(debug_config);
+    hadc3.Init.Overrun                  = ADC_OVR_DATA_OVERWRITTEN;
+    hadc3.Init.LeftBitShift             = ADC_LEFTBITSHIFT_NONE;
+    hadc3.Init.OversamplingMode         = DISABLE;
 
     HAL_StatusTypeDef adc3_status = HAL_ADC_Init(&hadc3);
     if (adc3_status != HAL_OK)
     {
-        char error_msg[60];
-        sprintf(error_msg, "ADC3 Init Error: %d, State: 0x%lX\r\n", adc3_status, (unsigned long)hadc3.State);
-        Terminal_Display(error_msg);
+        snprintf(msg.text, MSG_LEN, "ADC3 Init Error: %d, State: 0x%lX\r\n", adc3_status, (unsigned long)hadc3.State);
+        if (xQueueSend(xUartQueue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
+            /* Queue full, message not sent */
+        }
         MT_Error_Handler();
     }
-    
-      /** Configure the ADC multi-mode
-  */
+
     // multimode.Mode = ADC_MODE_INDEPENDENT;
     // if (HAL_ADCEx_MultiModeConfigChannel(&hadc3, &multimode) != HAL_OK)
     // {
     //     Error_Handler();
     // }
 
-    // uint8_t debug_calib[] = "MotorControl_ADC_Init: Starting ADC3 calibration...\r\n";
-    // HAL_UART_Transmit(&hcom_uart[COM1], debug_calib, strlen((char*)debug_calib), HAL_MAX_DELAY);
-    
     // // Calibrate ADC3 for better accuracy
     // HAL_StatusTypeDef cal_status = HAL_ADCEx_Calibration_Start(&hadc3, ADC_CALIB_OFFSET, ADC_SINGLE_ENDED);
-    // if (cal_status != HAL_OK)
-    // {
-    //     uint8_t error_msg[50];
-    //     sprintf((char*)error_msg, "ADC3 Calibration Error: %d\r\n", cal_status);
-    //     HAL_UART_Transmit(&hcom_uart[COM1], error_msg, strlen((char*)error_msg), HAL_MAX_DELAY);
-    // }
-    // else
-    // {
-    //     uint8_t calib_ok[] = "MotorControl_ADC_Init: ADC3 calibration successful\r\n";
-    //     HAL_UART_Transmit(&hcom_uart[COM1], calib_ok, strlen((char*)calib_ok), HAL_MAX_DELAY);
-    // }
     
-    // Configure ADC3 Channel 11 for PC1 (Motor A Current Sense)
-    sConfig.Channel = ADC_CHANNEL_TEMPSENSOR;  // PC1 is ADC3 Channel 11
-    sConfig.Rank = ADC_REGULAR_RANK_1;
-    sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;  // Longer sampling for stability
-    sConfig.SingleDiff = ADC_SINGLE_ENDED;
-    sConfig.OffsetNumber = ADC_OFFSET_NONE;
-    sConfig.Offset = 0;
-    sConfig.OffsetSignedSaturation = DISABLE;
+    MotorControl_ADC_Channel_Init();
 
-    char debug_channel[] = "MotorControl_ADC_Init: Configuring ADC3 Channel 11...\r\n";
-    Terminal_Display(debug_channel);
-
-    HAL_StatusTypeDef adc3_ch_status = HAL_ADC_ConfigChannel(&hadc3, &sConfig);
-    if (adc3_ch_status != HAL_OK)
-    {
-        char error_msg[60];
-        sprintf(error_msg, "ADC3 Ch Config Error: %d, State: 0x%lX\r\n", adc3_ch_status, (unsigned long)hadc3.State);
-        Terminal_Display(error_msg);
-        MT_Error_Handler();
+    snprintf(msg.text, MSG_LEN, "ADC3 initialization complete - State: 0x%lX, ready for conversions!\r\n", (unsigned long)hadc3.State);
+    if (xQueueSend(xUartQueue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
+        /* Queue full, message not sent */
     }
-    
-    // Wait for ADC voltage regulator to stabilize
-    HAL_Delay(50);  // Initial delay for regulator
-
-    char debug_enable[] = "MotorControl_ADC_Init: Enabling ADC3...\r\n";
-    Terminal_Display(debug_enable);
-
-
-    HAL_Delay(100);  // Additional delay after enabling
-
-    char debug_msg[80];
-    sprintf(debug_msg, "ADC3 initialization complete - State: 0x%lX, ready for conversions!\r\n", (unsigned long)hadc3.State);
-    Terminal_Display(debug_msg);
-
 }
 
 uint16_t MotorControl_ReadCurrentA(void)
 {
     uint16_t adcValue = 0;
     static uint8_t error_count = 0;
-    const uint8_t MAX_ERRORS = 3;
+    UartMessage_t msg;
 
-    char debug_msg[80];
-    sprintf(debug_msg, "MotorControl_ReadCurrentA: ADC3 state before start = 0x%lX\r\n", (unsigned long)hadc3.State);
-    Terminal_Display(debug_msg);
-
-    // Check if ADC is in error state and try to recover
-    if (hadc3.State & HAL_ADC_STATE_ERROR_INTERNAL)
-    {
-        char error_msg[90];
-        sprintf(error_msg, "MotorControl_ReadCurrentA: ADC3 in ERROR_INTERNAL state (0x%lX), attempting recovery...\r\n", 
-                (unsigned long)hadc3.State);
-        Terminal_Display(error_msg);
-
+    /* Check if ADC is in error state and try to recover*/
+    if (hadc3.State & HAL_ADC_STATE_ERROR_INTERNAL) {
         error_count++;
-        if (error_count >= MAX_ERRORS)
-        {
-            char reset_msg[] = "MotorControl_ReadCurrentA: Max errors reached, performing full ADC3 reset...\r\n";
-            Terminal_Display(reset_msg);
-
-            MotorControl_ADC_Init();  // Full re-initialization
-            error_count = 0;
-            return 0;  // Return early after reset
-        }
-        else
-        {
-            // Try to clear the error by disabling and re-enabling ADC
-            
-            Terminal_Display("MotorControl_ReadCurrentA: Clearing ADC3 error state...\r\n");
-
-            ADC_Disable(&hadc3);
-            HAL_Delay(10);
-            ADC_Enable(&hadc3);
-            HAL_Delay(10);
-        }
     }
     
-    // Ensure ADC is ready before starting
-    if (hadc3.State != HAL_ADC_STATE_READY)
-    {
-        char debug_stop[] = "MotorControl_ReadCurrentA: ADC3 not ready, stopping first...\r\n";
-        Terminal_Display(debug_stop);
-
+    /*Ensure ADC is ready before starting*/
+    if (hadc3.State != HAL_ADC_STATE_READY) {
         HAL_ADC_Stop(&hadc3);
         HAL_Delay(10);
-
-        sprintf(debug_msg, "MotorControl_ReadCurrentA: ADC3 state after stop = 0x%lX\r\n", (unsigned long)hadc3.State);
-        Terminal_Display(debug_msg);
     }
     
-    // Start ADC conversion
+    /* Start ADC conversion*/
     HAL_StatusTypeDef start_status = HAL_ADC_Start(&hadc3);
-    HAL_Delay(500);  // Longer delay for stability
+    HAL_Delay(500);  /* Longer delay for stability*/
     
     if (start_status == HAL_OK)
     {
-        char debug_msg2[] = "MotorControl_ReadCurrentA: ADC3 started successfully, polling...\r\n";
-        Terminal_Display(debug_msg2);
-        // Wait for conversion to complete with timeout
-        HAL_StatusTypeDef poll_status = HAL_ADC_PollForConversion(&hadc3, 1000);  // Longer timeout
+        /* Wait for conversion to complete with timeout*/
+        HAL_StatusTypeDef poll_status = HAL_ADC_PollForConversion(&hadc3, 1000);
 
-        if (poll_status == HAL_OK)
-        {
-            // Get the converted value
+        if (poll_status == HAL_OK) {
+            /* Get the converted value*/
             adcValue = HAL_ADC_GetValue(&hadc3);
-            error_count = 0;  // Reset error count on successful read
-            
-            char debug_msg3[60];
-            sprintf(debug_msg3, "MotorControl_ReadCurrentA: Successful read, Value = %d\r\n", adcValue);
-            Terminal_Display(debug_msg3);
+            error_count = 0;  /* Reset error count on successful read*/
+                        
+            snprintf(msg.text, MSG_LEN, "ReadCurrentA: %d\r\n", adcValue);
+            if (xQueueSend(xUartQueue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
+                /* Queue full, message not sent */
+            }
         }
-        else
-        {
+        else {
             error_count++;
-            char error_msg[70];
-            sprintf(error_msg, "MotorControl_ReadCurrentA: Poll failed, status = %d, errors = %d\r\n", 
+            snprintf(msg.text, MSG_LEN, "ReadCurrentA: failed, status = %d, errors = %d\r\n", 
                     poll_status, error_count);
-            Terminal_Display(error_msg);
+            if (xQueueSend(xUartQueue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
+                /* Queue full, message not sent */
+            }
         }
-        
-        // Stop ADC properly
         HAL_ADC_Stop(&hadc3);
     }
-    else
-    {
+    else {
         error_count++;
-        char error_msg[80];
-        sprintf(error_msg, "MotorControl_ReadCurrentA: Start failed, status = %d, state = 0x%lX, errors = %d\r\n", 
+        snprintf(msg.text, MSG_LEN, "ReadCurrentA: failed, status = %d, state = 0x%lX, errors = %d\r\n", 
                 start_status, (unsigned long)hadc3.State, error_count);
-        Terminal_Display(error_msg);
-        
-        // Try simple reset if ADC3 is stuck
-        if (hadc3.State != HAL_ADC_STATE_READY)
-        {
-            char reset_msg[] = "MotorControl_ReadCurrentA: Attempting soft reset...\r\n";
-            Terminal_Display(reset_msg);
+        if (xQueueSend(xUartQueue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
+            /* Queue full, message not sent */
+        }
 
+         /* Try simple reset if ADC3 is stuck*/
+        if (hadc3.State != HAL_ADC_STATE_READY) {
             HAL_ADC_Stop(&hadc3);
             HAL_Delay(20);
         }
     }
-    
-    char debug_end[60];
-    sprintf(debug_end, "MotorControl_ReadCurrentA: Complete, returning %d\r\n", adcValue);
-    Terminal_Display(debug_end);
-
-    return adcValue;
-}
-  /* USER CODE BEGIN WHILE */
-  static uint32_t loop_counter = 0;
-void GetADCValues(void)
-{
-    /* USER CODE END WHILE */
-    loop_counter++;
-    
-    // Debug: Print loop iteration number
-    char loop_debug[50];
-    sprintf(loop_debug, "=== LOOP ITERATION %lu ===\r\n", loop_counter);
-    Terminal_Display(loop_debug);
-        
-    HAL_GPIO_TogglePin(GPIOE, GPIO_PIN_1); // Toggle LED on GPIOE pin 1    
-  
-    // Read ADC values from motor current sensors
-    char step2_debug[] = "Step 2: Reading ADC A...\r\n";
-    Terminal_Display(step2_debug);
-
-    uint16_t motor_a_current = MotorControl_ReadCurrentA();
-    
-    // Send ADC values via UART
-    char adc_data[100];
-    sprintf(adc_data, "Motor A Current: %d\r\n", motor_a_current);
-    Terminal_Display(adc_data);
-
-    // Removed redundant HAL_UART_Receive_IT call - it's handled in the callback
-    HAL_Delay(3000); // Delay for 1000 milliseconds
-
-    char step7_debug[] = "Step 7: Delay complete, loop ending\r\n";
-    Terminal_Display(step7_debug);
 }

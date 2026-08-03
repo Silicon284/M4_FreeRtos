@@ -12,7 +12,6 @@ GPIO_InitTypeDef BT_gpio_init_structure;
 GPIO_InitTypeDef Terminal_gpio_init_structure;
 char received_char[2];
 
-
 void BlueTooth_Console_Init(void){
 
   /* Enable GPIO clock */
@@ -94,10 +93,8 @@ void BlueTooth_Display(char* text) {
 /* USER CODE BEGIN 4 */
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
-  if (huart->Instance == USART2) // Check if the interrupt is from USART2
-  {
-    // Toggle LED to show interrupt is working
-    HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_0); // Green LED
+  /* Check if the interrupt is from USART2*/
+  if (huart->Instance == USART2) {
 
     char debug_msg[] = "ISR: Received '";
     Terminal_Display(debug_msg);
@@ -105,7 +102,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
     char end_msg[] = "'\r\n";
     Terminal_Display(end_msg);
 
-    // Continue receiving in interrupt mode
+    /* Continue receiving in interrupt mode*/
     HAL_UART_Receive_IT(&BT_UART, (uint8_t*)received_char, 2);
   }
 }

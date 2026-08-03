@@ -142,10 +142,9 @@ void BoardStartUp (void) {
     /* Wait until CPU2 boots and enters in stop mode or timeout*/
     timeout = 0x0FFFFFFF;
     while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) != RESET) /*&& (timeout-- > 0)*/);
-    // if ( timeout < 0 )
-    // {
-    // Error_Handler();
-    // }
+    if ( timeout < 0 ) {
+    Error_Handler();
+    }
 
     /*HW semaphore Clock enable*/
     __HAL_RCC_HSEM_CLK_ENABLE();
@@ -157,28 +156,14 @@ void BoardStartUp (void) {
     SystemClock_Config();
 
     /* When system initialization is finished, Cortex-M7 will release Cortex-M4 by means of
-    HSEM notification */
-
-    /*Take HSEM */
-    HAL_HSEM_FastTake(HSEM_ID_0);
-    /*Release HSEM in order to notify the CPU2(CM4)*/
-    //HAL_HSEM_Release(HSEM_ID_0,0);
-    /* wait until CPU2 wakes up from stop mode */
-    timeout = 0xFFFF;
-    // while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) == RESET)/* && (timeout-- > 0)*/);
-    if ( timeout < 0 )
-    {
-    Error_Handler();
-    }
+    HSEM notification */    
+    HAL_HSEM_FastTake(HSEM_ID_0); /*Take HSEM */
 
     // Enable BusFault so it routes to BusFault_Handler (not HardFault)
     SCB->SHCSR |= SCB_SHCSR_BUSFAULTENA_Msk;
 
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
-  /* USER CODE BEGIN Init */
-
-  /* Initialize leds */
   //BSP_LED_Init(LED_GREEN);
   BSP_LED_Init(LED_YELLOW);  
   /* Initialize USER push-button, will be used to trigger an interrupt each time it's pressed.*/
@@ -188,23 +173,17 @@ void BoardStartUp (void) {
   __HAL_RCC_D2SRAM1_CLK_ENABLE();
   __HAL_RCC_D2SRAM2_CLK_ENABLE();
   __HAL_RCC_D2SRAM3_CLK_ENABLE();
-  
 
   Terminal_Console_Init();
   MX_TIM3_Init();
-  ////HAL_Delay(1);
   MX_TIM4_Init();
 
   MX_I2C4_Init();
   BlueTooth_Console_Init();
 
-  // Initialize Motor Control System
   //MotorControl_Init();
   //MotorControl_ADC_Init();
   
-  //char motor_init_msg[] = "Motor Control and ADC Initialized!\r\n";
-  //Terminal_Display(motor_init_msg);
-
   HAL_StatusTypeDef statusI2C = HAL_OK;
 
   char timer_init_msg[100];
@@ -218,12 +197,12 @@ void BoardStartUp (void) {
   float_t temperature = 0.0;
 
   //HAL_I2C_Mem_Write(&hi2c1, IMUAdd, 0x6B, MemAddSize, &pData,  Size,  Timeout);
-    // ③ Release HSEM #0 — this is the signal that wakes M4
+  // ③ Release HSEM #0 — this is the signal that wakes M4
+
   HAL_HSEM_Release(HSEM_ID_0, 0);
   timeout = 0xFFFF;
   while((__HAL_RCC_GET_FLAG(RCC_FLAG_D2CKRDY) == RESET)/* && (timeout-- > 0)*/);
-  if ( timeout < 0 )
-  {
+  if ( timeout < 0 ) {
     Error_Handler();
   }
 }
@@ -248,6 +227,7 @@ void main(void) {
 
     xReturn = xTaskCreate(SM_Task_RedLedBlink, "RedLedBlink", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     xReturn = xTaskCreate(SM_Task_TerminalPrint, "TerminalPrint", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xReturn = xTaskCreate(SM_Task_Motor_CurrentA, "MotorCurrentA", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
 
     vTaskStartScheduler();
 }

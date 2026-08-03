@@ -45,7 +45,6 @@ unsigned int strlen(const char *str) {
 extern void xPortSysTickHandler(void);
 extern BaseType_t xTaskGetSchedulerState(void);
 
-
 void HSEM2_IRQHandler(void) {
     HAL_HSEM_IRQHandler();  // reads MISR, clears ICR, calls FreeCallback (weak no-op)
 }

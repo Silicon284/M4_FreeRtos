@@ -65,11 +65,18 @@ void SM_Task_YellowLedBlink(void *pvParameters) {
             xSemaphoreGive(xMutex_m4);            
         }
         snprintf(msg.text, MSG_LEN, "Data from core m4\r\n");
-        if (xQueueSend(xUartQueue, &msg, pdMS_TO_TICKS(100)) != pdPASS)
-        {
+        if (xQueueSend(xUartQueue, &msg, pdMS_TO_TICKS(100)) != pdPASS) {
             /* Queue full, message not sent */
         }
         BSP_LED_Toggle(LED_YELLOW);
         vTaskDelay(pdMS_TO_TICKS(500));
+    }
+}
+
+void SM_Task_Motor_CurrentA (void *pvParameters){
+    while(1)
+    {
+        MotorControl_ReadCurrentA();
+        vTaskDelay(pdMS_TO_TICKS(1000));
     }
 }
