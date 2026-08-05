@@ -5,3 +5,5 @@
 
 void MX_TIM3_Init(void);
 void MX_TIM4_Init(void);
+extern void SM_Ultrasonic_Trigger_Pulse(void);
+extern void SM_Ultrasonic_Calculate_distance(void);

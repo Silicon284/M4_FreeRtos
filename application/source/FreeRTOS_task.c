@@ -17,6 +17,7 @@
 SemaphoreHandle_t xMutex_m7, xSemaphore_m7;
 SemaphoreHandle_t xMutex_m4, xSemaphore_m4;
 QueueHandle_t xUartQueue;
+TaskHandle_t Ultrasonic_Trigger_Handle = NULL, Ultrasonic_distance_Handle = NULL;
 
 
 volatile enum {
@@ -79,4 +80,13 @@ void SM_Task_Motor_CurrentA (void *pvParameters){
         MotorControl_ReadCurrentA();
         vTaskDelay(pdMS_TO_TICKS(1000));
     }
+}
+
+void SM_Task_Ultrasonic_Trigger_Pulse(void *pvParameters) {
+  SM_Ultrasonic_Trigger_Pulse();
+}
+
+void SM_Task_Ultrasonic_Calculate_distance(void *pvParameters) {
+  SM_Ultrasonic_Calculate_distance();
+  vTaskResume(Ultrasonic_Trigger_Handle);
 }

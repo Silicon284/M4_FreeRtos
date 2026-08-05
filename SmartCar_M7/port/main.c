@@ -212,14 +212,14 @@ void main(void) {
     BoardStartUp();
 
     BaseType_t xReturn;
+
     xMutex_m7 = xSemaphoreCreateMutex();
     xSemaphore_m7 = xSemaphoreCreateBinary();
     xUartQueue = xQueueCreate(QUEUE_LENGTH, sizeof(UartMessage_t));
     xSemaphoreGive(xSemaphore_m7);   // make the first take succeed
 
     // Verify semaphore creation was successful
-    if(xMutex_m7 == NULL || xSemaphore_m7 == NULL || xUartQueue == NULL) {
-        // Handle error - semaphore creation failed
+    if(xMutex_m7 == NULL || xSemaphore_m7 == NULL || xUartQueue == NULL) { /* Handle error - semaphore creation failed*/
         while(1);
     }
     vQueueAddToRegistry( (QueueHandle_t) xMutex_m7, "Signal Mutex" );
@@ -228,6 +228,8 @@ void main(void) {
     xReturn = xTaskCreate(SM_Task_RedLedBlink, "RedLedBlink", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     xReturn = xTaskCreate(SM_Task_TerminalPrint, "TerminalPrint", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
     xReturn = xTaskCreate(SM_Task_Motor_CurrentA, "MotorCurrentA", configMINIMAL_STACK_SIZE, NULL, 1, NULL);
+    xReturn = xTaskCreate(SM_Task_Ultrasonic_Trigger_Pulse, "Ultrasonic_Trigger", configMINIMAL_STACK_SIZE, NULL, 1, Ultrasonic_Trigger_Handle);
+    xReturn = xTaskCreate(SM_Task_Ultrasonic_Calculate_distance, "Ultrasonic_distance", configMINIMAL_STACK_SIZE, NULL, 1, Ultrasonic_distance_Handle);  
 
     vTaskStartScheduler();
 }

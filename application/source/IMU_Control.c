@@ -134,7 +134,6 @@ void IMU_Raw_Read(void) {
     uint16_t Size = 1;
     uint32_t Timeout = 100;
 
-
     //HAL_I2C_Mem_Write(&hi2c1, IMUAdd, 0x6B, MemAddSize, &pData,  Size,  Timeout);
     
     uint8_t IMUData[14];
